@@ -1,8 +1,13 @@
-﻿namespace Vypex.CodingChallenge.Domain.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Vypex.CodingChallenge.Domain.Models
 {
     public class Employee
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = default!;
+        public required string Name { get; set; }
+        public List<LeaveDay>? Leaves { get; set; } = new();
+        [NotMapped]
+        public int TotalLeaveDays => Leaves?.Sum(ld => (ld.EndDate - ld.StartDate).Days + 1) ?? 0;
     }
 }

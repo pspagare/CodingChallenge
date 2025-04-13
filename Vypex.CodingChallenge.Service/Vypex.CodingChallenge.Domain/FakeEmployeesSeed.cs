@@ -15,7 +15,7 @@ namespace Vypex.CodingChallenge.Domain
                 .Select(e => new Employee
                 {
                     Id = e.Id,
-                    Name = e.Name
+                    Name = e.Name                    
                 });
     }
 }

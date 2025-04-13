@@ -1,6 +1,9 @@
 
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Scalar.AspNetCore;
 using Vypex.CodingChallenge.API;
+using Vypex.CodingChallenge.Application.Interface;
+using Vypex.CodingChallenge.Application.Services;
 using Vypex.CodingChallenge.Domain;
 using Vypex.CodingChallenge.Infrastructure;
 
@@ -10,13 +13,18 @@ namespace Vypex.CodingChallenge.Service
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);            
+            
+            // Add Services to the conatainer
 
             builder.Services
                 .AddApiModule()
                 .AddDomainModule()
                 .AddInfrastructureModule(builder.Configuration.GetConnectionString("DefaultConnection") ??
-                    throw new ArgumentException("Connection string not specified"));
+                    throw new ArgumentException("Connection string not specified"));            
+
+            // DI
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
             builder.Services
                 .AddControllers()

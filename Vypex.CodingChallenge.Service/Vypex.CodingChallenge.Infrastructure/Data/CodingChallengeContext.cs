@@ -7,6 +7,7 @@ namespace Vypex.CodingChallenge.Infrastructure.Data
     public class CodingChallengeContext : DbContext
     {
         public DbSet<Employee> Employees { get; set; } = default!;
+        public DbSet<LeaveDay> LeaveDays { get; set; } = default!;
 
         public CodingChallengeContext()
         {
@@ -32,8 +33,21 @@ namespace Vypex.CodingChallenge.Infrastructure.Data
                 .HasKey(e => e.Id);
 
             modelBuilder.Entity<Employee>()
-                .Property(e => e.Name)
-                .HasMaxLength(100);
+                .Property(e => e.Name).HasMaxLength(100);                      
+
+            modelBuilder.Entity<Employee>()
+               .HasMany(e => e.Leaves)
+               .WithOne(l => l.Employee)
+               .HasForeignKey(l => l.EmployeeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LeaveDay>()
+                .Property(l => l.StartDate)
+                .IsRequired();
+
+            modelBuilder.Entity<LeaveDay>()
+                .Property(l => l.EndDate)
+                .IsRequired();
         }
     }
 }
