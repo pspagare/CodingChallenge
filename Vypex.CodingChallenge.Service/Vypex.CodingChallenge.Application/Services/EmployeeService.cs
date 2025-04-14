@@ -13,28 +13,39 @@ namespace Vypex.CodingChallenge.Application.Services
 {
     public class EmployeeService(CodingChallengeContext context) : IEmployeeService
     {
-        public async Task AddLeaveAsync(LeaveDayDto leave)
+        /// <summary>
+        /// Add Leave
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <param name="leave"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task AddLeaveAsync(Guid employeeId, CreateLeaveDto leave)
         {
-            var employee = await context.Employees.Include(e => e.Leaves).FirstOrDefaultAsync(e => e.Id == leave.EmployeeId);
+            var employee = await context.Employees.Include(e => e.Leaves).FirstOrDefaultAsync(e => e.Id == employeeId);
             if (employee == null) throw new ArgumentException("Employee not found");
             if (employee.Leaves == null) throw new ArgumentException("Leave entry not found");
-            // Check overlapping
-            // TODO - Refactor
+           
             if (employee.Leaves.Any(ld => IsOverlapping(leave, ld)))
                 throw new ArgumentException("Leave dates overlap with existing leave");
 
             employee.Leaves.Add(new LeaveDay
             {
-                Id = Guid.NewGuid(),
                 StartDate = leave.StartDate,
-                EndDate = leave.EndDate,
-                Employee = employee,
-                EmployeeId = leave.EmployeeId
-            });
-
-            await context.SaveChangesAsync();
+                EndDate = leave.EndDate               
+            });            
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                //TODO: log error
+                throw;
+            }
+            
         }
-
+       
         public async Task DeleteLeaveAsync(Guid leaveId)
         {
             var leave = await context.LeaveDays.FirstOrDefaultAsync(ld => ld.Id == leaveId);
@@ -45,15 +56,15 @@ namespace Vypex.CodingChallenge.Application.Services
             }
         }
 
-        public async Task EditLeaveAsync(Guid employeeId, LeaveDayDto leave)
+        public async Task EditLeaveAsync(Guid employeeId, CreateLeaveDto leave)
         {
             var employee = await context.Employees.Include(e => e.Leaves).FirstOrDefaultAsync(e => e.Id == employeeId);
             if (employee == null) throw new Exception("Employee not found");
             if (employee.Leaves == null) throw new Exception("Leave entry not found");
-            var existing = employee.Leaves.FirstOrDefault(ld => ld.Id == leave.EmployeeId);
+            var existing = employee.Leaves.FirstOrDefault(ld => ld.Id == employeeId);
             if (existing == null) throw new Exception("Leave entry not found");
 
-            if (employee.Leaves.Any(ld => ld.Id != leave.EmployeeId && leave.StartDate <= ld.EndDate && leave.EndDate >= ld.StartDate))
+            if (employee.Leaves.Any(ld => ld.Id != employeeId && leave.StartDate <= ld.EndDate && leave.EndDate >= ld.StartDate))
                 throw new Exception("Leave dates overlap with existing leave");
 
             existing.StartDate = leave.StartDate;
@@ -75,7 +86,7 @@ namespace Vypex.CodingChallenge.Application.Services
                 TotalLeaveDays = e.TotalLeaveDays,
                 Leaves = e.Leaves.Select(ld => new LeaveDayDto
                 {
-                    EmployeeId = ld.Id,
+                    Id = ld.Id,
                     StartDate = ld.StartDate,
                     EndDate = ld.EndDate
                 }).ToList()
@@ -90,7 +101,7 @@ namespace Vypex.CodingChallenge.Application.Services
             return MapToDto(employee);
         }
 
-        private static bool IsOverlapping(LeaveDayDto newLeave, LeaveDay existing) => 
+        private static bool IsOverlapping(CreateLeaveDto newLeave, LeaveDay existing) => 
            newLeave.StartDate <= existing.EndDate && newLeave.EndDate >= existing.StartDate;
 
         private static EmployeeDto MapToDto(Employee employee)
@@ -102,7 +113,7 @@ namespace Vypex.CodingChallenge.Application.Services
                 TotalLeaveDays = employee.TotalLeaveDays,
                 Leaves = employee.Leaves?.Select(ld => new LeaveDayDto
                 {
-                    EmployeeId = ld.Id,
+                    Id = ld.Id,
                     StartDate = ld.StartDate,
                     EndDate = ld.EndDate
                 }).ToList() ?? new()

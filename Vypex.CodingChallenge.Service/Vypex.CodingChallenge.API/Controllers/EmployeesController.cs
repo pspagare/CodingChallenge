@@ -14,21 +14,7 @@ namespace Vypex.CodingChallenge.API.Controllers
         {
             var employees = await employeeService.GetEmployeesAsync(name);
             return Ok(employees);
-        }
-        /// <summary>
-        /// Get Employee By Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("{id}", Name = "GetEmployeeById")]
-        public async Task<ActionResult<EmployeeDto>> GetEmployeeById(Guid id)
-        {
-            var employee = await employeeService.GetEmployeesById(id);
-
-            if (employee == null) return NotFound();
-
-            return employee;
-        }
+        }       
 
         /// <summary>
         ///  AddLeave POST: api/Employees/{id}/leaves
@@ -36,10 +22,10 @@ namespace Vypex.CodingChallenge.API.Controllers
         /// <param name="id"></param>
         /// <param name="leave"></param>
         /// <returns></returns>
-        [HttpPost("{id}/leaves")]
-        public async Task<ActionResult<LeaveDayDto>> AddLeaveAsync(LeaveDayDto leave)
+        [HttpPost("Addleave")]
+        public async Task<ActionResult<CreateLeaveDto>> AddLeaveAsync(Guid employeeId, CreateLeaveDto leave)
         {            
-            await employeeService.AddLeaveAsync(leave);
+            await employeeService.AddLeaveAsync(employeeId, leave);
             return Ok(leave);
         }
 
@@ -51,7 +37,7 @@ namespace Vypex.CodingChallenge.API.Controllers
         /// <param name="updatedLeaveDay"></param>
         /// <returns></returns>
         [HttpPut("{id}/leaves")]
-        public async Task<IActionResult> EditLeave(Guid id, [FromBody] LeaveDayDto leave)
+        public async Task<IActionResult> EditLeave(Guid id, [FromBody] CreateLeaveDto leave)
         {
             await employeeService.EditLeaveAsync(id, leave);
             return Ok();

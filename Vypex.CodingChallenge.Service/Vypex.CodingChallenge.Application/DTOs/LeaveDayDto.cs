@@ -8,7 +8,7 @@ namespace Vypex.CodingChallenge.Application.DTOs
 {
     public class LeaveDayDto
     {
-        public Guid EmployeeId { get; set; }
+        public Guid Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
