@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vypex.CodingChallenge.Domain;
 using Vypex.CodingChallenge.Domain.Models;
+using Vypex.CodingChallenge.Infrastructure.Config;
 
 namespace Vypex.CodingChallenge.Infrastructure.Data
 {
@@ -28,26 +29,8 @@ namespace Vypex.CodingChallenge.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Employee>()
-                .HasKey(e => e.Id);
-
-            modelBuilder.Entity<Employee>()
-                .Property(e => e.Name).HasMaxLength(100);                      
-
-            modelBuilder.Entity<Employee>()
-               .HasMany(e => e.Leaves)
-               .WithOne(l => l.Employee)
-               .HasForeignKey(l => l.EmployeeId)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<LeaveDay>()
-                .Property(l => l.StartDate)
-                .IsRequired();
-
-            modelBuilder.Entity<LeaveDay>()
-                .Property(l => l.EndDate)
-                .IsRequired();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployeeConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveDayConfiguration).Assembly);
         }
     }
 }

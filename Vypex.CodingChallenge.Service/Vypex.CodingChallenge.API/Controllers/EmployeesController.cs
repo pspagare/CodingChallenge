@@ -10,50 +10,47 @@ namespace Vypex.CodingChallenge.API.Controllers
     {
 
         [HttpGet(Name = "GetEmployees")]
-        public async Task<ActionResult<IList<EmployeeDto>>> GetEmployees([FromQuery] string? name)
+        public async Task<ActionResult<IList<EmployeeDto>>> GetEmployees()
+        {
+            var employees = await employeeService.GetEmployeesAsync();
+
+            if (employees == null) {return NotFound();}
+
+            return Ok(employees);
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<IList<EmployeeDto>>> GetEmployees(string name)
         {
             var employees = await employeeService.GetEmployeesAsync(name);
-            return Ok(employees);
-        }       
 
-        /// <summary>
-        ///  AddLeave POST: api/Employees/{id}/leaves
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="leave"></param>
-        /// <returns></returns>
-        [HttpPost("Addleave")]
-        public async Task<ActionResult<CreateLeaveDto>> AddLeaveAsync(Guid employeeId, CreateLeaveDto leave)
+            if (employees == null) { return NotFound(); }
+
+            return Ok(employees);
+        }
+
+        [HttpPost("{id:guid}/leaves")]
+        public async Task<ActionResult<CreateLeaveDto>> AddLeaveAsync(Guid id, CreateLeaveDto leave)
         {            
-            await employeeService.AddLeaveAsync(employeeId, leave);
+            await employeeService.AddLeaveAsync(id, leave);
+
             return Ok(leave);
         }
 
-        /// <summary>
-        /// Edit LeaveDay
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="leaveId"></param>
-        /// <param name="updatedLeaveDay"></param>
-        /// <returns></returns>
-        [HttpPut("{id}/leaves")]
-        public async Task<IActionResult> EditLeave(Guid id, [FromBody] CreateLeaveDto leave)
+        [HttpPut("{id:guid}/leaves")]
+        public async Task<IActionResult> EditLeave(Guid id, LeaveDayDto leave)
         {
             await employeeService.EditLeaveAsync(id, leave);
-            return Ok();
+
+            return NoContent();
         }
 
-        /// <summary>
-        /// Delete Leave
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="leaveId"></param>
-        /// <returns></returns>
-        [HttpDelete("{id}/leaves/{leaveId}")]
-        public async Task<IActionResult> DeleteLeave(Guid leaveId)
+        [HttpDelete("{id:guid}/leaves/{leaveId:guid}")]
+        public async Task<IActionResult> DeleteLeave(Guid id, Guid leaveId)
         {
             await employeeService.DeleteLeaveAsync(leaveId);
-            return Ok();
+
+            return NoContent();
         }
     }
 }
