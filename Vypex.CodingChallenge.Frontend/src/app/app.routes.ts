@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { EMPLOYEES_ROUTES } from './employees/employees.routes';
+import { EMPLOYEES_ROUTES } from './Components/employees-listing/employees.routes';
 
 export const routes: Routes = [
   {
