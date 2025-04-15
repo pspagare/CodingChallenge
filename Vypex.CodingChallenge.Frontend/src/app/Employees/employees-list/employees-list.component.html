@@ -1,0 +1,23 @@
+<div class="search-container">
+    <input nz-input placeholder="Search employees..." (input)="search($event)" />
+    <button nz-button nzType="default" (click)="refresh()">Refresh</button>
+</div>
+
+<nz-table [nzData]="employees()" [nzBordered]="true" [nzSize]="'middle'">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Total Leave Days</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees()">
+        <td>{{ emp.name }}</td>
+        <td>{{ emp.totalLeaveDays }}</td>
+        <td>
+          <button nz-button nzType="link" (click)="manageLeave(emp.id)">Add Leave</button>
+        </td>
+      </tr>
+    </tbody>
+</nz-table>

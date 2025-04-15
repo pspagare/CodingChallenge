@@ -1,13 +1,10 @@
 import { Routes } from '@angular/router';
-import { EMPLOYEES_ROUTES } from './Components/employees-listing/employees.routes';
+import { EmployeeEditComponent } from './Employees/employee-edit/employee-edit.component';
+import { EmployeesListComponent } from './Employees/employees-list/employees-list.component';
+import { LeaveFormComponent } from './Employees/leave-form/leave-form.component';
 
 export const routes: Routes = [
-  {
-    path: '**',
-    redirectTo: 'employees',
-  },
-  {
-    path: 'employees',
-    children: EMPLOYEES_ROUTES
-  },
+  { path: '', component: EmployeesListComponent },
+  { path: 'leave/:id', component: EmployeeEditComponent },
+  { path: 'leave', component: LeaveFormComponent },
 ];

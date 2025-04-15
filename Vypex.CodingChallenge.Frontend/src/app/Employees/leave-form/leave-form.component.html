@@ -1,0 +1,23 @@
+<div *ngFor="let leave of leaves; let i = index" class="leave-item">
+    <nz-date-picker
+      [(ngModel)]="leave.startDate"
+      (ngModelChange)="onChange(leaves)"
+      nzFormat="yyyy-MM-dd"
+      placeholder="Start Date"
+    ></nz-date-picker>
+
+    <nz-date-picker
+      [(ngModel)]="leave.endDate"
+      (ngModelChange)="onChange(leaves)"
+      nzFormat="yyyy-MM-dd"
+      placeholder="End Date"
+    ></nz-date-picker>
+
+    <button nz-button nzType="text" nzDanger (click)="removeLeave(i)">Remove</button>
+  </div>
+
+  <button nz-button nzType="dashed" (click)="addLeave()">Add Leave</button>
+
+  <div *ngIf="isOverlapping()" style="color: red; margin-top: 8px;">
+    ❗ Leaves are overlapping. Please correct the dates.
+  </div>
