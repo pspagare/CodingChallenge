@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Vypex.CodingChallenge.Domain;
 using Vypex.CodingChallenge.Domain.Models;
+using Vypex.CodingChallenge.Infrastructure.Config;
 
 namespace Vypex.CodingChallenge.Infrastructure.Data
 {
     public class CodingChallengeContext : DbContext
     {
         public DbSet<Employee> Employees { get; set; } = default!;
+        public DbSet<LeaveDay> LeaveDays { get; set; } = default!;
 
         public CodingChallengeContext()
         {
@@ -27,13 +29,8 @@ namespace Vypex.CodingChallenge.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Employee>()
-                .HasKey(e => e.Id);
-
-            modelBuilder.Entity<Employee>()
-                .Property(e => e.Name)
-                .HasMaxLength(100);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployeeConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveDayConfiguration).Assembly);
         }
     }
 }
