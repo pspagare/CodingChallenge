@@ -1,0 +1,7 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <app-leave-form formControlName="leaves"></app-leave-form>
+
+    <button nz-button nzType="primary" htmlType="submit" [disabled]="!form.valid">
+      Submit Leave
+    </button>
+  </form>
